@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assignment Cover Page Generator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="logo">
+      <img src="logo.1.jpg" alt=""><b>MY COLLEGE</b>
+    </div>
+    <ul>
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Resources</a></li>
+      <li><a href="#">Course</a></li>
+      <li><a href="#">About Us</a></li>
+    </ul>
+  </nav>
+
+  <!-- Start Page -->
+  <section id="page1" class="active">
+    <h1>असाइनमेंट कवर पेज जनरेटर</h1>
+    <p>अपने असाइनमेंट के लिए तुरंत एक शानदार कवर पेज बनाएं।</p>
+    <button onclick="showPage('form')">शुरू करें</button>
+  </section>
+
+  <!-- Form Page -->
+  <section id="form">
+    <h1>असाइनमेंट कवर फॉर्म</h1>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>विद्यार्थी का नाम</label>
+        <input type="text" id="student" placeholder="अपना नाम दर्ज करें" required>
+      </div>
+
+
+      <div class="form-group">
+        <label>पिता का नाम</label>
+        <input type="text" id="father-name" placeholder="पिता का नाम दर्ज करें" required>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>रोल नंबर</label>
+        <input type="text" id="roll" placeholder="रोल नंबर दर्ज करें">
+      </div>
+
+
+      <div class="form-group">
+        <label>स्ट्रीम</label>
+        <select id="stream" onchange="loadSubjects()" required>
+          <option value="">स्ट्रीम चुनें</option>
+          <option value="BSc Bio">B.Sc. Bio</option>
+          <option value="BSc Maths">B.Sc. Maths</option>
+          <option value="BA">B.A.</option>
+          <option value="BCom">B.Com</option>
+          <option value="BCA">BCA</option>
+        </select>
+
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>सेमेस्टर</label>
+        <select id="semester" onchange="loadSubjects()">
+          <option value="">सेमेस्टर चुनें</option>
+          <option value="Sem 1">Sem 1</option>
+          <option value="Sem 2">Sem 2</option>
+          <option value="Sem 3">Sem 3</option>
+          <option value="Sem 4">Sem 4</option>
+          <option value="Sem 5">Sem 5</option>
+          <option value="Sem 6">Sem 6</option>
+        </select>
+
+      </div>
+
+      <div class="form-group">
+        <label>विषय</label>
+        <select id="subject" onchange="autoFillTeacher()" required>
+          <option value="">विषय चुनें</option>
+        </select>
+      </div>
+    </div>
+    <!-- Department hidden -->
+    <input type="hidden" id="department">
+
+
+    <div class="form-row single">
+      <div class="form-group">
+        <label class="topic-label">टॉपिक</label>
+        <input type="text" id="topic" placeholder="टॉपिक दर्ज करें" required>
+      </div>
+    </div>
+
+    <button type="button" onclick="submitForm()">कवर पेज बनाएं</button>
+    <button onclick="showPage('other-subject')">अन्य विषय</button>
+  </section>
+
+  <!-- Other Subject -->
+  <section id="other-subject">
+    <h1>अन्य विषय विवरण</h1>
+    <label>विषय का नाम</label>
+    <input type="text" id="other-subject-name">
+
+    <label>डिपार्टमेंट</label>
+    <input type="text" id="other-department">
+
+    <label>टीचर का नाम</label>
+    <input type="text" id="other-teacher">
+
+    <button onclick="saveOtherSubject()">Save</button>
+    <button onclick="showPage('form')">Close</button>
+  </section>
+
+  <!-- Preview Page -->
+  <section id="preview">
+    <div class="preview-box">
+      <div class="logo-row">
+        <img src="logo.1.jpg" alt="Left Logo" class="logo">
+
+        <div class="title-center">
+          <h1>GOVT. MAHAPRABHU VALLABHACHARYA</h1>
+          <h2>PG COLLEGE MAHASAMUND (C.G.)</h2>
+        </div>
+
+
+        <img src="logo.2.jpg" alt="Right Logo" class="logo">
+      </div>
+      <div id="previewContent"></div>
+      <button onclick="showPage('form')">Edit</button>
+      <button onclick="printPage()">Print</button>
+  </section>
+
+  <!--script wali line -->
+  <script>
+    // 🔹 Data with Multiple Teachers + Department
+    let data = {
+      "BSc Bio": {
+        "Sem 1": {
+          "Botany": { teachers: ["Mr.E.P Chelak(HOD)", "Dr.Jagriti Chandrakar(Asst.Prof.)", "Mrs.Riteshwari Sen Guest.Lect."], dept: "Botany" },
+          "Zoology": { teachers: ["Mrs.Priyanka Sonwani(HOD)", "Miss.Priyanka Chakradhari(Asst.Prof.)"], dept: "Zoology" },
+          "Chemistry": { teachers: ["Mr.Pradeep Kanhar(HOD)", "Mrs.Saraswati Seth(Asst.Prof.)", "Miss.Namrata Tamboli(Asst.Prof.)"], dept: "Chemistry" },
+          "English(AEC)": { teachers: ["Mr.C.Xalxo(HOD)", "Mr.A.P.Goswami(Asst.Prof.)", "Mr.Naresh Kumar(Guest.Lect.)"], dept: "English" },
+          "Chemistry in Daily Life(VAC)": { teachers: [" "], dept: "Chemistry" },
+          "History(GE)": { teachers: ["Dr.Rita Pandey", "Dr.Sobhna Jha(Gest.Lect.)"], dept: "History" },
+          "Sociology(GE)": { teachers: ["Mr.Dilip Badai(HOd)", "Miss Shivani Tawerkar(Asst.Prof.)", "Miss Chiteswari Sahu(Guest.Lect.)"], dept: "Sociology" }
+
+        },
+
+        "Sem 2": {
+          "Botany": { teachers: ["Mr.E.P Chelak(HOD)", "Dr.Jagriti Chandrakar(Asst.Prof.)", "Mrs.Riteshwari Sen Guest.Lect."], dept: "Botany" },
+          "Zoology": { teachers: ["Mrs.Priyanka Sonwani(HOD)", "Miss.Priyanka Chakradhari(Asst.Prof.)"], dept: "Zoology" },
+          "Chemistry": { teachers: ["Mr.Pradeep Kanhar(HOD)", "Mrs.Saraswati Seth(Asst.Prof.)", "Miss.Namrata Tamboli(Asst.Prof.)"], dept: "Chemistry" },
+          "Hindi(AEC)": { teachers: ["Dr.Durgawati Bharti(HOD)", "Mrs.Simarani Pradhan(Asst.Prof.)", "Dr.Annapurna Dewangna"], dept: "Hindi" },
+          "Vermiculture & Vermicompost (VAC)": { teacher: ["Mrs.Priyanka Sonwani(HOD)", "Miss.Priyanka Chakradhari(Asst.Prof.)"], dept: "Zoology" },
+          "History(GE)": { teachers: ["Dr.Rita Pandey", "Dr.Sobhna Jha(Gest.Lect.)", "Mrs.Mrinali Chandrakar"], dept: "History" },
+          "Sociology(GE)": { teachers: ["Mr.Dilip Badai(HOD)", "Miss Shivani Tawerkar(Asst.Prof.)", "Miss Chiteswari Sahu(Guest.Lect.)"], dept: "Sociology" }
+
+        },
+
+
+        "Sem 3": {
+          "Botany": { teachers: ["Mr.E.P Chelak(HOD)", "Dr.Jagriti Chandrakar(Asst.Prof.)", "Mrs.Riteshwari Sen Guest.Lect."], dept: "Botany" },
+          "Zoology": { teachers: ["Mrs.Priyanka Sonwani(HOD)", "Miss.Priyanka Chakradhari(Asst.Prof.)"], dept: "Zoology" },
+          "Chemistry": { teachers: ["Mr.Pradeep Kanhar(HOD)", "Mrs.Saraswati Seth(Asst.Prof.)", "Miss.Namrata Tamboli(Asst.Prof.)"], dept: "Chemistry" },
+        /*  "Environment(AEC)": { teachers: ["", "", ""], dept: "" },*/
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" }
+        },
+
+        "Sem 4": {
+          "Botany": { teachers: ["Mr.E.P Chelak(HOD)", "Dr.Jagriti Chandrakar(Asst.Prof.)", "Mrs.Riteshwari Sen Guest.Lect."], dept: "Botany" },
+          "Zoology": { teachers: ["Mrs.Priyanka Sonwani(HOD)", "Miss.Priyanka Chakradhari(Asst.Prof.)"], dept: "Zoology" },
+          "Chemistry": { teachers: ["Mr.Pradeep Kanhar(HOD)", "Mrs.Saraswati Seth(Asst.Prof.)", "Miss.Namrata Tamboli(Asst.Prof.)"], dept: "Chemistry" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" }
+        },
+        "Sem 5": {
+          "Botany": { teachers: ["Mr.E.P Chelak(HOD)", "Dr.Jagriti Chandrakar(Asst.Prof.)", "Mrs.Riteshwari Sen Guest.Lect."], dept: "Botany" },
+          "Zoology": { teachers: ["Mrs.Priyanka Sonwani(HOD)", "Miss.Priyanka Chakradhari(Asst.Prof.)"], dept: "Zoology" },
+          "Chemistry": { teachers: ["Mr.Pradeep Kanhar(HOD)", "Mrs.Saraswati Seth(Asst.Prof.)", "Miss.Namrata Tamboli(Asst.Prof.)"], dept: "Chemistry" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" }
+        },
+        "Sem 6": {
+          "Botany": { teachers: ["Mr.E.P Chelak(HOD)", "Dr.Jagriti Chandrakar(Asst.Prof.)", "Mrs.Riteshwari Sen Guest.Lect."], dept: "Botany" },
+          "Zoology": { teachers: ["Mrs.Priyanka Sonwani(HOD)", "Miss.Priyanka Chakradhari(Asst.Prof.)"], dept: "Zoology" },
+          "Chemistry": { teachers: ["Mr.Pradeep Kanhar(HOD)", "Mrs.Saraswati Seth(Asst.Prof.)", "Miss.Namrata Tamboli(Asst.Prof.)"], dept: "Chemistry" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" }
+        }
+      },
+
+      "BSc Maths": {
+        "Sem 1": {
+        /*  "Maths": { teachers: [""], dept: "Mathematics" },*/
+          "Physics": { teachers: ["Mr.Maniram Dhiwar(HOD)", "Mr.Jagdish Kumar Satyam(Asst.Prof.)"], dept: "Physics" },
+          "Chemistry": { teachers: ["Mr.Pradeep Kanhar(HOD)", "Mrs.Saraswati Seth(Asst.Prof.)", "Miss.Namrata Tamboli(Asst.Prof.)"], dept: "Chemistry" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" }
+        },
+        "Sem 2": {
+        /*  "Maths": { teachers: [""], dept: "Mathematics" },*/
+          "Physics": { teachers: ["Mr.Maniram Dhiwar(HOD)"], dept: "Physics" },
+          "Chemistry": { teachers: ["Mr.Pradeep Kanhar(HOD)", "Mrs.Saraswati Seth(Asst.Prof.)", "Miss.Namrata Tamboli(Asst.Prof.)"], dept: "Chemistry" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" }
+        },
+        "Sem 3": {
+        /*  "Maths": { teachers: [""], dept: "Mathematics" },*/
+          "Physics": { teachers: ["Mr.Maniram Dhiwar(HOD)"], dept: "Physics" },
+          "Chemistry": { teachers: ["Mr.Pradeep Kanhar(HOD)", "Mrs.Saraswati Seth(Asst.Prof.)", "Miss.Namrata Tamboli(Asst.Prof.)"], dept: "Chemistry" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" }
+        },
+        "Sem 4": {
+         /* "Maths": { teachers: [""], dept: "Mathematics" },*/
+          "Physics": { teachers: ["Mr.Maniram Dhiwar(HOD)"], dept: "Physics" },
+          "Chemistry": { teachers: ["Mr.Pradeep Kanhar(HOD)", "Mrs.Saraswati Seth(Asst.Prof.)", "Miss.Namrata Tamboli(Asst.Prof.)"], dept: "Chemistry" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" }
+        },
+        "Sem 5": {
+       /*   "Maths": { teachers: [""], dept: "Mathematics" },*/
+          "Physics": { teachers: ["Mr.Maniram Dhiwar(HOD)"], dept: "Physics" },
+          "Chemistry": { teachers: ["Mr.Pradeep Kanhar(HOD)", "Mrs.Saraswati Seth(Asst.Prof.)", "Miss.Namrata Tamboli(Asst.Prof.)"], dept: "Chemistry" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" }
+        },
+        "Sem 6": {
+         /* "Maths": { teachers: [""], dept: "Mathematics" },*/
+          "Physics": { teachers: ["Mr.Maniram Dhiwar(HOD)"], dept: "Physics" },
+          "Chemistry": { teachers: ["Mr.Pradeep Kanhar(HOD)", "Mrs.Saraswati Seth(Asst.Prof.)", "Miss.Namrata Tamboli(Asst.Prof.)"], dept: "Chemistry" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" }
+        }
+      },
+
+     /* "BA": {
+        "Sem 1": {
+          "English": { teachers: ["Mr.C.Xalxo(HOD", "Mr.A.P.Goswami(Asst.Prof.)", "Mr.Naresh Kumar(Guest.Lect.)"], dept: "English" },
+          "Hindi(AEC)": { teacher: ["Dr.Durgawati Bharti(HOD)", "Mrs.Simarani Pradhan(Asst.Prof.)", "Dr.Annapurna Dewangna"], dept: "Hindi" },
+          "History": { teachers: ["Dr.Rita Pandey", "Dr.Sobhna Jha(Gest.Lect.)"], dept: "History" },
+          "Sociology(GE)": { teachers: ["Mr.Dilip Badai(HOd)", "Miss Shivani Tawerkar(Asst.Prof.)", "Miss Chiteswari Sahu(Guest.Lect.)"], dept: "Socilogy" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" }
+        },
+
+
+        "Sem 2": {
+          "Political Science": { teachers: [""], dept: "Political Science" },
+          "Economics": { teachers: [""], dept: "Economics" },
+          "Geography": { teachers: [""], dept: "Geography" },
+          "History": { teachers: [""], dept: "History" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" }
+
+        },
+
+
+        "Sem 3": {
+          "Sociology": { teachers: [""], dept: "Sociology" },
+          "Hindi(AEC)": { teacher: ["Dr.Durgawati Bharti(HOD)", "Mrs.Simarani Pradhan(Asst.Prof.)", "Dr.Annapurna Dewangna"], dept: "Hindi" },
+          "English": { teachers: [""], dept: "English" },
+          "History": { teachers: [""], dept: "History" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" }
+        },
+
+
+        "Sem 4": {
+          "English": { teachers: [""], dept: "English" },
+          "Hindi(AEC)": { teacher: ["Dr.Durgawati Bharti(HOD)", "Mrs.Simarani Pradhan(Asst.Prof.)", "Dr.Annapurna Dewangna"], dept: "Hindi" },
+          "History": { teachers: [""], dept: "History" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" }
+        },
+
+
+        "Sem 5": {
+          "Political Science": { teachers: [""], dept: "Political Science" },
+          "Economics": { teachers: [""], dept: "Economics" },
+          "Geography": { teachers: [""], dept: "Geography" },
+          "History": { teachers: [""], dept: "History" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" }
+        },
+
+
+        "Sem 6": {
+          "Sociology": { teachers: [""], dept: "Sociology" },
+          "Hindi(AEC)": { teacher: ["Dr.Durgawati Bharti(HOD)", "Mrs.Simarani Pradhan(Asst.Prof.)", "Dr.Annapurna Dewangna"], dept: "Hindi" },
+          "English": { teachers: [""], dept: "English" },
+          "History": { teachers: [""], dept: "History" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" }
+        }
+      },*/
+
+
+      "BCom": {
+        "Sem 1": {
+          "Fundamental Of Accounting ": { teachers: [" "], dept: "Commerce" },
+          "Business Economic": { teachers: ["Mrs.Rajeshwari Soni(Asst.Prof.)"], dept: "Commerce" },
+          "Business Low": { teachers: ["Mr.Manbodh Chauhan(Asst.Prof.)"], dept: "Commerce" },
+          "Environmental studies(AEC)": { teachers: ["Mrs.Parvin Karim(Guest.Asst.Prof.)",], dept: "Commerce" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" }
+        },
+
+
+        "Sem 2": {
+        /*  "Business Account ": { teachers: ["Mrs.Rajeshwari Soni(Asst.Prof.)"], dept: "Commerce" },*/
+          "Business Mathemetics": { teachers: ["Mr.Manbodh Chauhan(Asst.Prof.)"], dept: "Commerce" },
+          "Bussiness Environment ": { teachers: ["Mrs.Parveen Karim(Guest.Asst.Prof.)",], dept: "Commerce" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" }
+        },
+
+
+        "Sem 3": {
+          "Corporate Account": { teachers: ["Mr.Manbodh Chouhan(Asst.Prof.)"], dept: "Commerce" },
+          "Company Low": { teachers: ["Mrs.Manisha Pradhan(Asst.Prof.)"], dept: "Commerce" },
+          "Principal Of Management": { teachers: ["Mrs.Rajeshwari Soni(Asst.Prof.)"], dept: "Commerce" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" }
+        },
+
+
+      /*  "Sem 4": {
+          "Accountancy": { teachers: [" "], dept: "Commerce" },
+          "Business Studies": { teachers: [" "], dept: "Commerce" },
+          "Economics (Commerce)": { teachers: [" "], dept: "Commerce" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" }
+        },
+
+
+        "Sem 5": {
+          "Banking": { teachers: [" "], dept: "Commerce" },
+          "Accountancy": { teachers: [" "], dept: "Commerce" },
+          "Business Studies": { teachers: [" "], dept: "Commerce" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" }
+        },
+
+
+        "Sem 6": {
+          "Taxation": { teachers: [" "], dept: "Commerce" },
+          "Economics (Commerce)": { teachers: [" "], dept: "Commerce" },
+          "Accountancy": { teachers: [" "], dept: "Commerce" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" }
+        }
+      },
+
+      "BCA": {
+        "Sem 1": {
+          "Programming": { teachers: [" "], dept: "Computer Science" },
+          "Computer Fundamentals": { teachers: [""], dept: "Computer Science" },
+          "Mathematics": { teachers: [""], dept: "Mathematics" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" }
+        },
+
+
+        "Sem 2": {
+          "Data Structures": { teachers: [""], dept: "Computer Science" },
+          "Database Management": { teachers: [""], dept: "Computer Science" },
+          "Operating System": { teachers: ["Prof. S. Patel"], dept: "Computer Science" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" }
+        },
+
+
+        "Sem 3": {
+          "Networking": { teachers: [""], dept: "Computer Science" },
+          "Software Engineering": { teachers: [""], dept: "Computer Science" },
+          "Web Development": { teachers: [""], dept: "Computer Science" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" }
+        },
+
+
+        "Sem 4": {
+          "Programming": { teachers: [" "], dept: "Computer Science" },
+          "Computer Fundamentals": { teachers: [""], dept: "Computer Science" },
+          "Mathematics": { teachers: [""], dept: "Mathematics" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" }
+        },
+
+
+        "Sem 5": {
+          "Data Structures": { teachers: [""], dept: "Computer Science" },
+          "Database Management": { teachers: [""], dept: "Computer Science" },
+          "Operating System": { teachers: ["Prof. S. Patel"], dept: "Computer Science" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" }
+        },
+
+
+        "Sem 6": {
+          "Networking": { teachers: [""], dept: "Computer Science" },
+          "Software Engineering": { teachers: [""], dept: "Computer Science" },
+          "Web Development": { teachers: [""], dept: "Computer Science" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" },
+          "": { teachers: ["", "", ""], dept: "" }
+        }*/
+      }
+    }; 
+
+    // 🔹 Page Navigation
+    function showPage(id) {
+      document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+      if (id === "preview") generatePreview();
+    }
+
+    // 🔹 Load Subjects
+    function loadSubjects() {
+      const stream = document.getElementById("stream").value;
+      const sem = document.getElementById("semester").value;
+      const subjectSelect = document.getElementById("subject");
+      subjectSelect.innerHTML = "<option value=''>विषय चुनें</option>";
+      if (data[stream] && data[stream][sem]) {
+        for (let subj in data[stream][sem]) {
+          let opt = document.createElement("option");
+          opt.value = subj;
+          opt.textContent = subj;
+          subjectSelect.appendChild(opt);
+        }
+      }
+      autoFillTeacher();
+    }
+
+    // 🔹 Auto Fill Department
+    function autoFillTeacher() {
+      const stream = document.getElementById("stream").value;
+      const sem = document.getElementById("semester").value;
+      const subject = document.getElementById("subject").value;
+
+      if (data[stream] && data[stream][sem] && data[stream][sem][subject]) {
+        document.getElementById("department").value = data[stream][sem][subject].dept;
+      } else {
+        document.getElementById("department").value = "";
+      }
+    }
+
+    // 🔹 Save Other Subject
+    function saveOtherSubject() {
+      const subj = document.getElementById("other-subject-name").value;
+      const dept = document.getElementById("other-department").value;
+      const teacher = document.getElementById("other-teacher").value;
+      const stream = document.getElementById("stream").value;
+      const sem = document.getElementById("semester").value;
+
+      if (!data[stream]) data[stream] = {};
+      if (!data[stream][sem]) data[stream][sem] = {};
+      data[stream][sem][subj] = { teachers: [teacher], dept: dept };
+
+      document.getElementById("department").value = dept;
+      loadSubjects();
+      document.getElementById("subject").value = subj;
+      autoFillTeacher();
+      showPage("form");
+    }
+
+    // 🔹 Generate Preview
+    function generatePreview() {
+      const s = document.getElementById("student").value.trim();
+      const f = document.getElementById("father-name").value.trim();
+      const r = document.getElementById("roll").value.trim();
+      const stream = document.getElementById("stream").value.trim();
+      const sem = document.getElementById("semester").value.trim();
+      const subject = document.getElementById("subject").value.trim();
+      const topic = document.getElementById("topic").value.trim();
+
+      let teachers = [];
+      let dept = "";
+      if (data[stream] && data[stream][sem] && data[stream][sem][subject]) {
+        teachers = data[stream][sem][subject].teachers || [];
+        dept = data[stream][sem][subject].dept;
+      }
+      let teacherHTML = teachers.length > 0
+        ? teachers.map(t => `<p>${t}</p>`).join("")
+        : "<p>—</p>";
+
+      let html = `
+      <div>
+        <h3>Department of ${dept}</h3>
+        <h3 class="session-text">Session : 2025-26</h3>
+
+        <p class="subject-text"><b>Subject :</b> ${subject}</p>
+        <p class="topic-text"><b>Topic :</b> ${topic}</p>
+
+        <div class="details-row">
+          <div class="submitted-block">
+            <h4>Submitted by</h4>
+            <p><b>Name :</b> ${s}</p>
+            <p><b>Father's Name :</b> ${f}</p>
+            <p><b>Roll No. :</b> ${r}</p>
+            <p><b>Class :</b> ${stream} (${sem})</p>
+          </div>
+
+          <div class="guided-block">
+            <h4>Guided by</h4>
+            ${teacherHTML}
+          </div>
+        </div>
+      </div>
+    `;
+
+      document.getElementById("previewContent").innerHTML = html;
+    }
+
+    // 🔹 Print
+    function printPage() {
+      window.print();
+    }
+
+
+
+    function submitForm() {
+      const formSection = document.querySelector("#form"); // section id="form"
+
+      // Section के अंदर required वाले सारे input/select लो
+      const fields = formSection.querySelectorAll("input[required], select[required], textarea[required]");
+
+      let allValid = true;
+      fields.forEach(field => {
+        if (!field.value.trim()) {
+          allValid = false;
+          field.reportValidity(); // browser का error दिखाएगा
+          field.focus();
+          return false; // loop तोड़ दो
+        }
+      });
+
+      if (allValid) {
+        showPage("preview"); // सब ठीक तो Preview पर जाए
+      }
+    }
+
+  </script>
+
+</body>
+
+</html>
