@@ -344,7 +344,8 @@
 
  .topic-text {
    font-size: 24pt;
-   color: rgb(0, 0, 0);
+
+   color: rgb(green);
  }
 
  .subject-text {
